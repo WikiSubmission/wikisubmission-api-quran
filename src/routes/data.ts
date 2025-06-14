@@ -1,15 +1,16 @@
 import { WRoute } from "../types/w-route";
 import { Quran } from "../data/data-quran";
 import { QuranWordByWord } from "../data/data-quran-word-by-word";
+import { parseURLQuery } from "../utils/parse-url-query";
 
 export default function route(): WRoute {
     return {
         url: "/data/:query",
         method: "GET",
         handler: async (req, res) => {
-            const query = decodeURIComponent((req.params as { query: string }).query).trim();
+            const query = parseURLQuery(req.query, req.params);
             
-            const previewMode = (req.query as { preview: string }).preview === "true";
+            const previewMode = (req.query as { preview: string })?.preview === "true";
 
             if (query === "quran-word-by-word") {
                 if (previewMode) {
