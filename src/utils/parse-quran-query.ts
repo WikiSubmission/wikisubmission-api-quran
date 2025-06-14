@@ -1,6 +1,6 @@
 import { WResult } from "../types/w-result";
 
-export function parseQuranQuery(query: string, queryParams: Record<string, string> = {}): WResult["request"] {
+export function parseQuranQuery(query: string, queryParams: any): WResult["request"] {
     // Remove any extra whitespace and convert to lowercase for easier parsing
     query = query.toLowerCase().trim();
 

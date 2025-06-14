@@ -21,10 +21,10 @@ export default function route(): WRoute {
                 return;
             }
 
-            const parsedRequest = parseQuranQuery(query, req.query as Record<string, string>);
+            const parsedRequest = parseQuranQuery(query, req.query);
             
             var result: WResult = { 
-                message: "Pending",
+                message: "",
                 request: parsedRequest,
                 response: {
                     data: [],
