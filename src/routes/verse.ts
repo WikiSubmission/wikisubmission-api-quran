@@ -69,7 +69,20 @@ export default function route(): WRoute {
                     return;
                 }
 
-                if (options.search_strategy === "exact") {
+                if (queryText === "random-verse") {
+                    result.response.data = [Quran.data[Math.floor(Math.random() * Quran.data.length)]];
+                }
+
+                else if (queryText === "random-chapter") {
+                    const randomChapterInt = Math.floor(Math.random() * (114 - 1 + 1) + 1);
+
+                    result.response.data =
+                      Quran.data.length > 0
+                        ? Quran.data.filter((i) => i.chapter_number === randomChapterInt)
+                        : [];
+                }
+
+                else if (options.search_strategy === "exact") {
                     // Exact phrase search
                     result.response.data = Quran.data.filter(verse =>
                         searchInVerse(verse, queryText, options)
