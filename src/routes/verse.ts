@@ -37,7 +37,7 @@ export default function route(): WRoute {
 
             if (result.request.type === "chapter") {
                 const chapter = result.request.parsed_query.chapter;
-                result.response.data = Quran.data.filter(verse => verse.chapter_number === chapter);
+                result.response.data = Quran.data.filter(verse => verse.chapter_number === chapter).sort((a, b) => a.verse_index - b.verse_index);
             }
 
             if (result.request.type === "verse") {
@@ -45,7 +45,7 @@ export default function route(): WRoute {
                 const verse = result.request.parsed_query.verse;
                 result.response.data = Quran.data.filter(v => 
                     v.chapter_number === chapter && v.verse_number === verse
-                );
+                ).sort((a, b) => a.verse_index - b.verse_index);
             }
 
             if (result.request.type === "verse_range") {
@@ -71,13 +71,13 @@ export default function route(): WRoute {
                     // Exact phrase search
                     result.response.data = Quran.data.filter(verse => 
                         searchInVerse(verse, queryText, options)
-                    );
+                    ).sort((a, b) => a.verse_index - b.verse_index);
                 } else {
                     // Fuzzy search - split query into words and match any
                     const searchWords = queryText.split(/\s+/).filter(word => word.length > 0);
                     result.response.data = Quran.data.filter(verse => {
                         return searchWords.some(word => searchInVerse(verse, word, options));
-                    });
+                    }).sort((a, b) => a.verse_index - b.verse_index);
                 }
 
                 // Apply highlighting if requested
