@@ -1,4 +1,4 @@
-export function parseURLQuery(
+export function parseQueryString(
   queryObject: any,
   paramObject: any,
 ): string | undefined {

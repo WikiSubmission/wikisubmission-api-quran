@@ -6,7 +6,7 @@ export interface WResult {
     // [A summary / status message]
     message: string;
     // [The request, parsed from the query]
-    request: RequestObject;
+    request: QuranRequestTypes;
     // [The actual response]
     response: {
         data: any[];
@@ -17,7 +17,7 @@ export interface WResult {
     };
 }
 
-export type RequestObject =
+export type QuranRequestTypes =
     | ChapterRequest // e.g. /1
     | VerseRequest // e.g. /1:1
     | VerseRangeRequest // e.g. /1:1-1:3
@@ -28,11 +28,10 @@ export type RequestObject =
 export interface ChapterRequest {
     type: "chapter";
     raw_query: string;
+    parsed_options: ParsedOptions;
     parsed_query: {
         chapter: number;
     };
-    parsed_options: ParsedOptions;
-    standard_url: string;
 }
 
 export interface VerseRequest {
@@ -43,7 +42,6 @@ export interface VerseRequest {
         verse: number;
     };
     parsed_options: ParsedOptions;
-    standard_url: `/${string}`;
 }
 
 export interface VerseRangeRequest {
@@ -55,7 +53,6 @@ export interface VerseRangeRequest {
         verse_end: number;
     };
     parsed_options: ParsedOptions;
-    standard_url: string;
 }
 
 export interface SearchRequest {
@@ -63,7 +60,6 @@ export interface SearchRequest {
     raw_query: string;
     parsed_query: string;
     parsed_options: ParsedOptions;
-    standard_url: string;
 }
 
 export interface MultipleVersesRequest {
@@ -75,7 +71,6 @@ export interface MultipleVersesRequest {
         verse_end?: number;
     }>;
     parsed_options: ParsedOptions;
-    standard_url: string;
 }
 
 export interface ParsedOptions {

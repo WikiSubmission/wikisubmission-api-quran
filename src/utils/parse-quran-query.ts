@@ -42,7 +42,6 @@ export function parseQuranQuery(query: string, queryParams: any): WResult["reque
             raw_query: query,
             parsed_query: { chapter },
             parsed_options: baseOptions,
-            standard_url: `/?chapter=${chapter}`
         };
     }
 
@@ -56,7 +55,6 @@ export function parseQuranQuery(query: string, queryParams: any): WResult["reque
             raw_query: query,
             parsed_query: { chapter, verse },
             parsed_options: baseOptions,
-            standard_url: `/?chapter=${chapter}&verse=${verse}`
         };
     }
 
@@ -71,7 +69,6 @@ export function parseQuranQuery(query: string, queryParams: any): WResult["reque
             raw_query: query,
             parsed_query: { chapter, verse, verse_end: verseEnd },
             parsed_options: baseOptions,
-            standard_url: `/?chapter=${chapter}&verse=${verse}&verse_end=${verseEnd}`
         };
     }
 
@@ -104,7 +101,6 @@ export function parseQuranQuery(query: string, queryParams: any): WResult["reque
             raw_query: query,
             parsed_query: parsedVerses,
             parsed_options: baseOptions,
-            standard_url: `/?multiple_verses=${verses.join(",")}`
         };
     }
 
@@ -128,6 +124,5 @@ export function parseQuranQuery(query: string, queryParams: any): WResult["reque
         raw_query: query,
         parsed_query: query,
         parsed_options: searchOptions,
-        standard_url: `/?q=${encodeURIComponent(query)}`
     };
 } 

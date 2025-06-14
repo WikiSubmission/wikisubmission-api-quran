@@ -22,7 +22,6 @@ export default function route(): WRoute {
                         verse: result[0].verse_number,
                     },
                     parsed_options: {},
-                    standard_url: "/random-verse",
                 },
                 response: {
                     data: result || [],

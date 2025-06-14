@@ -23,7 +23,6 @@ export default function route(): WRoute {
                         chapter: randomChapterInt,
                     },
                     parsed_options: {},
-                    standard_url: "/random-chapter",
                 },
                 response: {
                     data: result || [],

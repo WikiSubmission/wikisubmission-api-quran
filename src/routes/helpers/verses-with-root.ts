@@ -1,6 +1,6 @@
 import { RootWordMap } from "../../_localdata/ws-root-word-map";
 import { WRoute } from "../../types/w-route";
-import { parseURLQuery } from "../../utils/parse-url-query";
+import { parseQueryString } from "../../utils/parse-query-string";
 
 /**
  * Returns all verses containing a given root (e.g. ر ح م) word using pre-processed data to avoid heavy computations.
@@ -11,7 +11,7 @@ export default function route(): WRoute {
         url: "/verses-with-root/:query?",
         method: "GET",
         handler: async (req, res) => {
-            const query = parseURLQuery(req.query, req.params);
+            const query = parseQueryString(req.query, req.params);
 
             if (!query) {
                 res.code(400).send({ error: "A valid query is required" });
