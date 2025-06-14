@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import { Server } from "./server";
 import { Quran } from "./data/data-quran";
 import { QuranWordByWord } from "./data/data-quran-word-by-word";
+import { QuranChapters } from "./data/data-quran-chapters";
 
 (async () => {
     try {
@@ -22,6 +23,7 @@ import { QuranWordByWord } from "./data/data-quran-word-by-word";
         // [Initialize data]
         await Quran.initialize();
         await QuranWordByWord.initialize();
+        await QuranChapters.initialize();
 
         // [Start server]
         await Server.instance.start();
