@@ -25,7 +25,7 @@ export default function route(): WRoute {
                 return;
             }
 
-            res.code(200).send(result);
+            res.code(200).send(result as { verse_id: string; word_index: number }[]);
         },
     };
 }
