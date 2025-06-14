@@ -27,6 +27,7 @@ export type RequestObject =
 
 export interface ChapterRequest {
     type: "chapter";
+    raw_query: string;
     parsed_query: {
         chapter: number;
     };
@@ -36,6 +37,7 @@ export interface ChapterRequest {
 
 export interface VerseRequest {
     type: "verse";
+    raw_query: string;
     parsed_query: {
         chapter: number;
         verse: number;
@@ -46,6 +48,7 @@ export interface VerseRequest {
 
 export interface VerseRangeRequest {
     type: "verse_range";
+    raw_query: string;
     parsed_query: {
         chapter: number;
         verse: number;
@@ -57,6 +60,7 @@ export interface VerseRangeRequest {
 
 export interface SearchRequest {
     type: "search";
+    raw_query: string;
     parsed_query: string;
     parsed_options: ParsedOptions;
     standard_url: string;
@@ -64,6 +68,7 @@ export interface SearchRequest {
 
 export interface MultipleVersesRequest {
     type: "multiple_verses";
+    raw_query: string;
     parsed_query: Array<{
         chapter: number;
         verse: number;

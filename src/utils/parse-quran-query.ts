@@ -17,6 +17,7 @@ export function parseQuranQuery(query: string, queryParams: any): WResult["reque
         const chapter = parseInt(chapterOnlyMatch[1], 10);
         return {
             type: "chapter",
+            raw_query: query,
             parsed_query: { chapter },
             parsed_options: baseOptions,
             standard_url: `/?chapter=${chapter}`
@@ -30,6 +31,7 @@ export function parseQuranQuery(query: string, queryParams: any): WResult["reque
         const verse = parseInt(verseMatch[2], 10);
         return {
             type: "verse",
+            raw_query: query,
             parsed_query: { chapter, verse },
             parsed_options: baseOptions,
             standard_url: `/?chapter=${chapter}&verse=${verse}`
@@ -44,6 +46,7 @@ export function parseQuranQuery(query: string, queryParams: any): WResult["reque
         const verseEnd = parseInt(verseRangeMatch[3], 10);
         return {
             type: "verse_range",
+            raw_query: query,
             parsed_query: { chapter, verse, verse_end: verseEnd },
             parsed_options: baseOptions,
             standard_url: `/?chapter=${chapter}&verse=${verse}&verse_end=${verseEnd}`
@@ -57,12 +60,12 @@ export function parseQuranQuery(query: string, queryParams: any): WResult["reque
         const parsedVerses = verses.map(v => {
             const parts = v.split(":");
             if (parts.length !== 2) throw new Error(`Invalid verse format: ${v}`);
-            
+
             const chapter = parseInt(parts[0], 10);
             const versePart = parts[1];
-            
+
             if (isNaN(chapter)) throw new Error(`Invalid chapter number: ${parts[0]}`);
-            
+
             if (versePart.includes("-")) {
                 const [verse, verseEnd] = versePart.split("-").map(n => parseInt(n, 10));
                 if (isNaN(verse) || isNaN(verseEnd)) throw new Error(`Invalid verse range: ${versePart}`);
@@ -76,6 +79,7 @@ export function parseQuranQuery(query: string, queryParams: any): WResult["reque
 
         return {
             type: "multiple_verses",
+            raw_query: query,
             parsed_query: parsedVerses,
             parsed_options: baseOptions,
             standard_url: `/?multiple_verses=${verses.join(",")}`
@@ -84,10 +88,10 @@ export function parseQuranQuery(query: string, queryParams: any): WResult["reque
 
     // If no specific format is matched, treat as search query
     // Parse and validate search-specific options from query parameters
-    const validSearchType: "exact" | "fuzzy" = queryParams.search_strategy === "exact" || queryParams.search_strategy === "fuzzy" 
+    const validSearchType: "exact" | "fuzzy" = queryParams.search_strategy === "exact" || queryParams.search_strategy === "fuzzy"
         ? queryParams.search_strategy as "exact" | "fuzzy"
         : "fuzzy";
-    
+
     const searchOptions = {
         ...baseOptions,
         search_strategy: validSearchType,
@@ -99,6 +103,7 @@ export function parseQuranQuery(query: string, queryParams: any): WResult["reque
 
     return {
         type: "search",
+        raw_query: query,
         parsed_query: query,
         parsed_options: searchOptions,
         standard_url: `/?q=${encodeURIComponent(query)}`
