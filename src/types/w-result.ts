@@ -23,7 +23,7 @@ export type RequestObject =
     | VerseRangeRequest // e.g. /1:1-1:3
     | SearchRequest // e.g. /angels
     | MultipleVersesRequest // e.g. /1:1,1:3,2:1-5
-    // (?q={query} is also acceptable)
+// (?q={query} is also acceptable)
 
 export interface ChapterRequest {
     type: "chapter";
@@ -43,7 +43,7 @@ export interface VerseRequest {
         verse: number;
     };
     parsed_options: ParsedOptions;
-    standard_url: string;
+    standard_url: `/${string}`;
 }
 
 export interface VerseRangeRequest {
@@ -80,9 +80,9 @@ export interface MultipleVersesRequest {
 
 export interface ParsedOptions {
     // Universal options
-    sort_results: boolean;
-    normalize_god_casing: boolean;
-    include_word_by_word: boolean;
+    sort_results?: boolean;
+    normalize_god_casing?: boolean;
+    include_word_by_word?: boolean;
     // Search-specific options
     search_strategy?: "exact" | "fuzzy";
     search_language?: string;
