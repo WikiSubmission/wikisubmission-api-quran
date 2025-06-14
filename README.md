@@ -1,10 +1,12 @@
 # WikiSubmission Quran API
 
-Access Quran: The Final Testament.
+Access Quran: The Final Testament. Under development.
 
 ### Base URL
 
-```quran.wikisubmission.org```
+```
+quran.wikisubmission.org
+```
 
 ## License
 
