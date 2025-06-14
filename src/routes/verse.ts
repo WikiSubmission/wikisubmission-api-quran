@@ -5,7 +5,7 @@ import { QuranWordByWord } from "../data/data-quran-word-by-word";
 import { parseQuranQuery } from "../utils/parse-quran-query";
 import { parseQueryString } from "../utils/parse-query-string";
 import { highlightQuery } from "../utils/highlight-query";
-import { searchInVerse } from "../utils/search-utils";
+import { searchStrategy } from "../utils/search-strategy";
 import { dynamicPropertyAccess } from "../utils/dynamic-property-access";
 import fill from "fill-range";
 
@@ -109,14 +109,13 @@ export default function route(): WRoute {
                 else if (options.search_strategy === "exact") {
                     // Exact phrase search
                     baseResult.response.data = Quran.data.filter(verse =>
-                        searchInVerse(verse, queryText, options)
+                        searchStrategy(verse, queryText, options)
                     ).sort((a, b) => a.verse_index - b.verse_index);
                 } else {
-                    // Fuzzy search - split query into words and match any
-                    const searchWords = queryText.split(/\s+/).filter(word => word.length > 0);
-                    baseResult.response.data = Quran.data.filter(verse => {
-                        return searchWords.some(word => searchInVerse(verse, word, options));
-                    }).sort((a, b) => a.verse_index - b.verse_index);
+                    // Default search - all words must be present (order doesn't matter)
+                    baseResult.response.data = Quran.data.filter(verse =>
+                        searchStrategy(verse, queryText, options)
+                    ).sort((a, b) => a.verse_index - b.verse_index);
                 }
 
                 // Apply highlighting if requested
