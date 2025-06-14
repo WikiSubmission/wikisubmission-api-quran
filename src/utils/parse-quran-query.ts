@@ -11,6 +11,28 @@ export function parseQuranQuery(query: string, queryParams: any): WResult["reque
         include_word_by_word: queryParams.include_word_by_word === "true",
     };
 
+    // Handle direct query parameters when no query string is provided
+    if (!query && (queryParams.chapter || queryParams.verse || queryParams.verse_end || queryParams.multiple_verses || queryParams.q)) {
+        if (queryParams.q) {
+            query = queryParams.q;
+        } else if (queryParams.multiple_verses) {
+            query = queryParams.multiple_verses;
+        } else if (queryParams.chapter) {
+            const chapter = queryParams.chapter;
+            const verse = queryParams.verse;
+            const verseEnd = queryParams.verse_end;
+
+            if (verseEnd) {
+                query = `${chapter}:${verse}-${verseEnd}`;
+            } else if (verse) {
+                query = `${chapter}:${verse}`;
+            } else {
+                query = chapter;
+            }
+        }
+        query = query.toLowerCase().trim();
+    }
+
     // Try to match chapter only (e.g., "1")
     const chapterOnlyMatch = query.match(/^(\d+)$/);
     if (chapterOnlyMatch) {

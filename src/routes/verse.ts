@@ -15,15 +15,17 @@ export default function route(): WRoute {
         method: "GET",
         handler: async (req, res) => {
             const query = parseURLQuery(req.query, req.params);
+            const queryParams = req.query as any;
+            const hasDirectParams = queryParams.chapter || queryParams.verse || queryParams.verse_end || queryParams.multiple_verses || queryParams.q;
 
-            if (!query) {
+            if (!query && !hasDirectParams) {
                 res.code(400).send({ error: "A valid query is required" });
                 return;
             }
 
-            const parsedRequest = parseQuranQuery(query, req.query);
-            
-            var result: WResult = { 
+            const parsedRequest = parseQuranQuery(query || "", req.query);
+
+            var result: WResult = {
                 message: "",
                 request: parsedRequest,
                 response: {
@@ -43,7 +45,7 @@ export default function route(): WRoute {
             if (result.request.type === "verse") {
                 const chapter = result.request.parsed_query.chapter;
                 const verse = result.request.parsed_query.verse;
-                result.response.data = Quran.data.filter(v => 
+                result.response.data = Quran.data.filter(v =>
                     v.chapter_number === chapter && v.verse_number === verse
                 ).sort((a, b) => a.verse_index - b.verse_index);
             }
@@ -53,7 +55,7 @@ export default function route(): WRoute {
                 const verse = result.request.parsed_query.verse;
                 const verse_end = result.request.parsed_query.verse_end;
                 const verseNumbers = fill(verse, verse_end);
-                result.response.data = Quran.data.filter(v => 
+                result.response.data = Quran.data.filter(v =>
                     v.chapter_number === chapter && verseNumbers.includes(v.verse_number)
                 );
             }
@@ -69,7 +71,7 @@ export default function route(): WRoute {
 
                 if (options.search_strategy === "exact") {
                     // Exact phrase search
-                    result.response.data = Quran.data.filter(verse => 
+                    result.response.data = Quran.data.filter(verse =>
                         searchInVerse(verse, queryText, options)
                     ).sort((a, b) => a.verse_index - b.verse_index);
                 } else {
@@ -85,7 +87,7 @@ export default function route(): WRoute {
                     const language = options.search_language || "en";
                     result.response.data = result.response.data.map(verse => {
                         const highlightedVerse = { ...verse };
-                        
+
                         // Highlight verse text
                         const verseText = dynamicPropertyAccess.text(verse, language);
                         const highlightedText = highlightQuery(queryText, verseText, "markdown");
@@ -93,7 +95,7 @@ export default function route(): WRoute {
                             const textField = language === "en" ? "verse_text_english" : `verse_text_${language}`;
                             highlightedVerse[textField] = highlightedText;
                         }
-                        
+
                         // Highlight subtitle if not ignoring commentary
                         if (!options.search_ignore_commentary) {
                             const subtitle = dynamicPropertyAccess.subtitle(verse, language);
@@ -102,7 +104,7 @@ export default function route(): WRoute {
                                 const subtitleField = language === "en" ? "verse_subtitle_english" : `verse_subtitle_${language}`;
                                 highlightedVerse[subtitleField] = highlightedSubtitle;
                             }
-                            
+
                             // Highlight footnote if not ignoring commentary
                             const footnote = dynamicPropertyAccess.footnote(verse, language);
                             const highlightedFootnote = highlightQuery(queryText, footnote, "markdown");
@@ -111,7 +113,7 @@ export default function route(): WRoute {
                                 highlightedVerse[footnoteField] = highlightedFootnote;
                             }
                         }
-                        
+
                         return highlightedVerse;
                     });
                 }
@@ -120,7 +122,7 @@ export default function route(): WRoute {
             if (result.request.type === "multiple_verses") {
                 const verses = result.request.parsed_query;
                 const allVerses: Array<{ chapter: number; verse: number; originalIndex: number }> = [];
-                
+
                 for (let i = 0; i < verses.length; i++) {
                     const verse = verses[i];
                     if (verse.verse_end) {
@@ -135,7 +137,7 @@ export default function route(): WRoute {
 
                 // Get matching verses and preserve original query order
                 const matchedVerses = allVerses.map(target => {
-                    const foundVerse = Quran.data.find(v => 
+                    const foundVerse = Quran.data.find(v =>
                         v.chapter_number === target.chapter && v.verse_number === target.verse
                     );
                     return foundVerse ? { ...foundVerse, originalIndex: target.originalIndex } : null;
@@ -153,10 +155,10 @@ export default function route(): WRoute {
             // Apply word-by-word data if requested
             if (result.request.parsed_options.include_word_by_word) {
                 result.response.data = result.response.data.map(verse => {
-                    const wordByWordData = QuranWordByWord.data.filter(word => 
+                    const wordByWordData = QuranWordByWord.data.filter(word =>
                         word.verse_id === verse.verse_id
                     );
-                    
+
                     return {
                         ...verse,
                         word_by_word: wordByWordData
@@ -169,9 +171,9 @@ export default function route(): WRoute {
                 result.response.data.sort((a, b) => a.verse_index - b.verse_index);
             }
 
-            result.message = result.response.data.length > 0 
-                ? `Found ${result.response.data.length} results with '${query}'` 
-                : `No results found matching "${query}"`;
+            result.message = result.response.data.length > 0
+                ? `Found ${result.response.data.length} verse${result.response.data.length !== 1 ? "s" : ""} with '${parsedRequest.raw_query}'`
+                : `No verses found with '${parsedRequest.raw_query}'`;
 
             res.code(200).send(result);
         },
