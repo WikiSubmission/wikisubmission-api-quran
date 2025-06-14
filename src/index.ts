@@ -3,6 +3,7 @@ import { Server } from "./server";
 import { Quran } from "./data/data-quran";
 import { QuranWordByWord } from "./data/data-quran-word-by-word";
 import { QuranChapters } from "./data/data-quran-chapters";
+import { QuranForeign } from "./data/data-quran-foreign";
 
 (async () => {
     try {
@@ -24,6 +25,7 @@ import { QuranChapters } from "./data/data-quran-chapters";
         await Quran.initialize();
         await QuranWordByWord.initialize();
         await QuranChapters.initialize();
+        await QuranForeign.initialize();
 
         // [Start server]
         await Server.instance.start();

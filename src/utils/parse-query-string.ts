@@ -2,10 +2,9 @@ export function parseQueryString(
   queryObject: any,
   paramObject: any,
 ): string | undefined {
-  return (
-    queryObject.q ||
-    paramObject.q ||
-    queryObject.query ||
-    paramObject.query
-  )?.replace("/s/g", "%20");
+  const raw = queryObject.q || paramObject.q || queryObject.query || paramObject.query;
+
+  if (!raw || typeof raw !== "string") return undefined;
+
+  return decodeURIComponent(raw.replace(/\+/g, " ")).trim();
 }

@@ -2,6 +2,7 @@ import { WRoute } from "../types/w-route";
 import { Quran } from "../data/data-quran";
 import { QuranWordByWord } from "../data/data-quran-word-by-word";
 import { QuranChapters } from "../data/data-quran-chapters";
+import { QuranForeign } from "../data/data-quran-foreign";
 import { parseQueryString } from "../utils/parse-query-string";
 import { parseSupplementalQueries } from "../utils/parse-supplemental-queries";
 
@@ -10,6 +11,7 @@ export default function route(): WRoute {
         "quran": { data: Quran.data, label: "ws-quran" },
         "quran-word-by-word": { data: QuranWordByWord.data, label: "ws-quran-word-by-word" },
         "quran-chapters": { data: QuranChapters.data, label: "ws-quran-chapters" },
+        "quran-foreign": { data: QuranForeign.data, label: "ws-quran-foreign" },
     };
 
     return {
