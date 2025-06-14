@@ -77,9 +77,9 @@ export default function route(): WRoute {
                     const randomChapterInt = Math.floor(Math.random() * (114 - 1 + 1) + 1);
 
                     result.response.data =
-                      Quran.data.length > 0
-                        ? Quran.data.filter((i) => i.chapter_number === randomChapterInt)
-                        : [];
+                        Quran.data.length > 0
+                            ? Quran.data.filter((i) => i.chapter_number === randomChapterInt)
+                            : [];
                 }
 
                 else if (options.search_strategy === "exact") {
@@ -188,7 +188,13 @@ export default function route(): WRoute {
                 ? `Found ${result.response.data.length} verse${result.response.data.length !== 1 ? "s" : ""} with '${parsedRequest.raw_query}'`
                 : `No verses found with '${parsedRequest.raw_query}'`;
 
-            res.code(200).send(result);
+            res.code(200).send({
+                ...result,
+                request: {
+                    ...result.request,
+                    type: query === "random-verse" ? "verse" : query === "random-chapter" ? "chapter" : result.request.type,
+                }
+            });
         },
     };
 }
