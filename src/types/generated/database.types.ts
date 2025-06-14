@@ -417,6 +417,84 @@ export type Database = {
         }
         Relationships: []
       }
+      "ws-quran-chapters": {
+        Row: {
+          chapter_number: number
+          chapter_revelation_order: string
+          chapter_title_arabic: string
+          chapter_title_english: string
+          chapter_title_transliterated: string
+          chapter_verses: string
+        }
+        Insert: {
+          chapter_number?: number
+          chapter_revelation_order: string
+          chapter_title_arabic: string
+          chapter_title_english: string
+          chapter_title_transliterated: string
+          chapter_verses: string
+        }
+        Update: {
+          chapter_number?: number
+          chapter_revelation_order?: string
+          chapter_title_arabic?: string
+          chapter_title_english?: string
+          chapter_title_transliterated?: string
+          chapter_verses?: string
+        }
+        Relationships: []
+      }
+      "ws-quran-foreign": {
+        Row: {
+          verse_footnote_german: string | null
+          verse_footnote_tamil: string | null
+          verse_footnote_turkish: string | null
+          verse_id: string
+          verse_subtitle_tamil: string | null
+          verse_subtitle_turkish: string | null
+          verse_text_bahasa: string
+          verse_text_french: string
+          verse_text_german: string
+          verse_text_persian: string
+          verse_text_russian: string
+          verse_text_swedish: string
+          verse_text_tamil: string
+          verse_text_turkish: string
+        }
+        Insert: {
+          verse_footnote_german?: string | null
+          verse_footnote_tamil?: string | null
+          verse_footnote_turkish?: string | null
+          verse_id: string
+          verse_subtitle_tamil?: string | null
+          verse_subtitle_turkish?: string | null
+          verse_text_bahasa: string
+          verse_text_french: string
+          verse_text_german: string
+          verse_text_persian: string
+          verse_text_russian: string
+          verse_text_swedish: string
+          verse_text_tamil: string
+          verse_text_turkish: string
+        }
+        Update: {
+          verse_footnote_german?: string | null
+          verse_footnote_tamil?: string | null
+          verse_footnote_turkish?: string | null
+          verse_id?: string
+          verse_subtitle_tamil?: string | null
+          verse_subtitle_turkish?: string | null
+          verse_text_bahasa?: string
+          verse_text_french?: string
+          verse_text_german?: string
+          verse_text_persian?: string
+          verse_text_russian?: string
+          verse_text_swedish?: string
+          verse_text_tamil?: string
+          verse_text_turkish?: string
+        }
+        Relationships: []
+      }
       "ws-quran-word-by-word": {
         Row: {
           arabic_text: string
