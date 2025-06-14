@@ -57,7 +57,7 @@ export default function route(): WRoute {
                 const verseNumbers = fill(verse, verse_end);
                 result.response.data = Quran.data.filter(v =>
                     v.chapter_number === chapter && verseNumbers.includes(v.verse_number)
-                );
+                ).sort((a, b) => a.verse_index - b.verse_index);
             }
 
             if (result.request.type === "search") {
