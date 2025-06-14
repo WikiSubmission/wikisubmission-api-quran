@@ -5,8 +5,8 @@ import { QuranWordByWord } from "../data/data-quran-word-by-word";
 import { parseQuranQuery } from "../utils/parse-quran-query";
 import { searchInVerse } from "../utils/search-utils";
 import { highlightQuery } from "../utils/highlight-query";
-import { dynamicPropertyAccess } from "../utils/dynamic-property-access";
 import { parseURLQuery } from "../utils/parse-url-query";
+import { dynamicPropertyAccess } from "../utils/dynamic-property-access";
 import fill from "fill-range";
 
 export default function route(): WRoute {
@@ -61,6 +61,11 @@ export default function route(): WRoute {
             if (result.request.type === "search") {
                 const queryText = result.request.parsed_query;
                 const options = result.request.parsed_options;
+
+                if (queryText.length <= 2) {
+                    res.code(400).send({ error: "Query must be at least 3 characters" });
+                    return;
+                }
 
                 if (options.search_strategy === "exact") {
                     // Exact phrase search
