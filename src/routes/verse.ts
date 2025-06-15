@@ -104,6 +104,8 @@ export default function route(): WRoute {
                         Quran.data.length > 0
                             ? Quran.data.filter((i) => i.chapter_number === randomChapterInt)
                             : [];
+
+                    baseResult.response.data = baseResult.response.data.sort((a, b) => a.verse_index - b.verse_index);
                 }
 
                 else if (options.search_strategy === "exact") {

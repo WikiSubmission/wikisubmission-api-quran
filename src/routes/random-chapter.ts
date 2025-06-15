@@ -10,9 +10,9 @@ export default function route(): WRoute {
             const randomChapterInt = Math.floor(Math.random() * (114 - 1 + 1) + 1);
 
             const result =
-              Quran.data.length > 0
-                ? Quran.data.filter((i) => i.chapter_number === randomChapterInt)
-                : [];
+                Quran.data.length > 0
+                    ? Quran.data.filter((i) => i.chapter_number === randomChapterInt)
+                    : [];
 
             res.code(result ? 200 : 404).send({
                 message: result ? `Found random chapter: ${result[0].chapter_number}` : "No random chapter found",
@@ -25,7 +25,7 @@ export default function route(): WRoute {
                     parsed_options: {},
                 },
                 response: {
-                    data: result || [],
+                    data: result.sort((a, b) => a.verse_index - b.verse_index) || [],
                     copyright: {
                         text: "Dr. Rashad Khalifa, Ph.D.",
                         url: "https://masjidtucson.org/"
