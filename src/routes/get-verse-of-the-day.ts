@@ -6,14 +6,17 @@ export default function route(): WRoute {
     return {
         url: "/verse-of-the-day",
         method: "GET",
-        handler: async (_, res) => {
+        handler: async (req, res) => {
             const db = getSupabaseClient();
+            const queryString = new URLSearchParams(req.query as Record<string, string>).toString();
+
             const { data, error } = await db.from("ws-verse-of-the-day")
                 .select("*")
                 .eq("year", new Date().getFullYear())
                 .eq("month", new Date().getMonth() + 1)
                 .eq("day", new Date().getDate())
                 .single();
+                
             if (error) {
                 // No entry for today. Create new record.
                 const randomVerse = Quran.data[Math.floor(Math.random() * Quran.data.length)];
@@ -23,10 +26,10 @@ export default function route(): WRoute {
                     day: new Date().getDate(),
                     verse_id: randomVerse.verse_id,
                 });
-                res.code(302).redirect(`/${randomVerse.verse_id}`);
+                res.code(302).redirect(`/${randomVerse.verse_id}${queryString ? `?${queryString}` : ""}`);
             } else {
                 // Entry for today. Redirect to the verse.
-                res.code(302).redirect(`/${data.verse_id}`);
+                res.code(302).redirect(`/${data.verse_id}${queryString ? `?${queryString}` : ""}`);
             }
         },
     };

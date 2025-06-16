@@ -5,14 +5,17 @@ export default function route(): WRoute {
     return {
         url: "/chapter-of-the-day",
         method: "GET",
-        handler: async (_, res) => {
+        handler: async (req, res) => {
             const db = getSupabaseClient();
+            const queryString = new URLSearchParams(req.query as Record<string, string>).toString();
+
             const { data, error } = await db.from("ws-chapter-of-the-day")
                 .select("*")
                 .eq("year", new Date().getFullYear())
                 .eq("month", new Date().getMonth() + 1)
                 .eq("day", new Date().getDate())
                 .single();
+                
             if (error) {
                 // No entry for today. Create new record.
                 const randomChapterInt = Math.floor(Math.random() * (114 - 1 + 1) + 1);
@@ -23,10 +26,11 @@ export default function route(): WRoute {
                     day: new Date().getDate(),
                     chapter_number: randomChapterInt,
                 });
-                res.code(302).redirect(`/${randomChapterInt}`);
+
+                res.code(302).redirect(`/${randomChapterInt}${queryString ? `?${queryString}` : ""}`);
             } else {
                 // Entry for today. Redirect to the chapter.
-                res.code(302).redirect(`/${data.chapter_number}`);
+                res.code(302).redirect(`/${data.chapter_number}${queryString ? `?${queryString}` : ""}`);
             }
         },
     };
