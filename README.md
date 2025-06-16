@@ -10,7 +10,7 @@ quran.wikisubmission.org
 
 ### Endpoints
 
-- [x] /{query} (or /?q={query}) - detects and returns chapter, verse, verse-range, multiple-verses (comma separated), or text search result
+- [x] /{query} (or /?q={query}) - universal endpoint that handles chapter, verse, verse-range, multiple-verses, or text search results
 - [x] /random-verse - returns a random verse
 - [x] /random-chapter - returns a random chapter
 - [x] /verse-of-the-day - returns today's daily verse (randomly generated)
