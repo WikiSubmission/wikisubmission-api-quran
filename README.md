@@ -10,23 +10,23 @@ quran.wikisubmission.org
 
 ### Endpoints
 
-- [*] /{query} (or /?q={query}) - detects and returns chapter, verse, verse-range, multiple-verses (comma separated), or text search result
-- [*] /random-verse - returns a random verse
-- [*] /random-chapter - returns a random chapter
-- [*] /verse-of-the-day - returns today's daily verse (randomly generated)
-- [*] /chapter-of-the-day - returns today's daily chapter (randomly generated)
+- [x] /{query} (or /?q={query}) - detects and returns chapter, verse, verse-range, multiple-verses (comma separated), or text search result
+- [x] /random-verse - returns a random verse
+- [x] /random-chapter - returns a random chapter
+- [x] /verse-of-the-day - returns today's daily verse (randomly generated)
+- [x] /chapter-of-the-day - returns today's daily chapter (randomly generated)
 
 ### Optional parameters
 
-- [*] sort_results (default: false)
-- [*] normalize_god_casing (default: false)
-- [*] include_word_by_word (default: false)
-- [*] include_language (turkish | french | german | bahasa | persian | tamil | swedish | russian; default: none)
-- [*] search_strategy (fuzzy | exact; default: fuzzy)
-- [*] search_language (turkish | french | german | bahasa | persian | tamil | swedish | russian; default: english)
-- [*] search_case_sensitive (default: false)
-- [*] search_ignore_commentary (default: false)
-- [*] search_apply_highlight (default: false)
+- [x] sort_results (default: false)
+- [x] normalize_god_casing (default: false)
+- [x] include_word_by_word (default: false)
+- [x] include_language (turkish | french | german | bahasa | persian | tamil | swedish | russian; default: none)
+- [x] search_strategy (fuzzy | exact; default: fuzzy)
+- [x] search_language (turkish | french | german | bahasa | persian | tamil | swedish | russian; default: english)
+- [x] search_case_sensitive (default: false)
+- [x] search_ignore_commentary (default: false)
+- [x] search_apply_highlight (default: false)
 
 ### Status
 
