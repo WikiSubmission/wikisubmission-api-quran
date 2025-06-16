@@ -15,12 +15,20 @@ export default function route(): WRoute {
                 return res.status(404).send(`Verse "${verse_id}" not found`);
             }
 
+            var index: number | undefined;
+
+            if (verse_id.split(":")[1] === "0") {
+                index = 1;
+            }
             const indexEntry = getTraditionalQuranIndex().find(v => v.verse_id === verse_id);
-            if (!indexEntry) {
-                return res.status(404).send(`Audio index for "${verse_id}" not found`);
+
+            if (indexEntry) {
+                index = indexEntry.index;
             }
 
-            const { index } = indexEntry;
+            if (!index) {
+                return res.status(404).send(`Audio index for "${verse_id}" not found`);
+            }
 
             const response = {
                 verse_id,
@@ -36,6 +44,7 @@ export default function route(): WRoute {
 
 // Traditional index includes 9:128–129 manually inserted
 function getTraditionalQuranIndex(): { verse_id: string; index: number }[] {
+
     const indexed: { verse_id: string; index: number }[] = [];
     let i = 1;
 
