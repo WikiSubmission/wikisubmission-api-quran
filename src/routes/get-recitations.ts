@@ -3,11 +3,10 @@ import { WRoute } from "../types/w-route";
 
 export default function route(): WRoute {
     return {
-        url: "/recitations/:reciter/:verse_id",
+        url: "/recitations/:verse_id",
         method: "GET",
         handler: async (req, res) => {
-            const { reciter, verse_id } = req.params as {
-                reciter: string;
+            const { verse_id } = req.params as {
                 verse_id: string;
             };
 
@@ -24,7 +23,6 @@ export default function route(): WRoute {
             const { index } = indexEntry;
 
             const response = {
-                reciter,
                 verse_id,
                 mishary: `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${index}.mp3`,
                 basit: `https://cdn.islamic.network/quran/audio/128/ar.basit/${index}.mp3`,
