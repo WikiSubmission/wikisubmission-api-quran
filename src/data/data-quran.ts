@@ -7,4 +7,5 @@ export const Quran = new WData<
   gracefullyRefreshOnChanges: {
     minutesBeforeResync: 1,
   },
+  numericalSortKey: "verse_index"
 });
