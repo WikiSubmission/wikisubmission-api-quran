@@ -360,6 +360,30 @@ export type Database = {
         }
         Relationships: []
       }
+      "ws-chapter-of-the-day": {
+        Row: {
+          chapter_number: number
+          day: number
+          id: string | null
+          month: number
+          year: number
+        }
+        Insert: {
+          chapter_number: number
+          day: number
+          id?: string | null
+          month: number
+          year: number
+        }
+        Update: {
+          chapter_number?: number
+          day?: number
+          id?: string | null
+          month?: number
+          year?: number
+        }
+        Relationships: []
+      }
       "ws-quran": {
         Row: {
           chapter_number: number
@@ -446,52 +470,109 @@ export type Database = {
       }
       "ws-quran-foreign": {
         Row: {
+          chapter_title_bahasa: string | null
+          chapter_title_french: string | null
+          chapter_title_german: string | null
+          chapter_title_persian: string | null
+          chapter_title_russian: string | null
+          chapter_title_swedish: string | null
+          chapter_title_tamil: string | null
+          chapter_title_turkish: string | null
+          verse_footnote_bahasa: string | null
+          verse_footnote_french: string | null
           verse_footnote_german: string | null
+          verse_footnote_persian: string | null
+          verse_footnote_russian: string | null
+          verse_footnote_swedish: string | null
           verse_footnote_tamil: string | null
           verse_footnote_turkish: string | null
           verse_id: string
+          verse_subtitle_bahasa: string | null
+          verse_subtitle_french: string | null
+          verse_subtitle_german: string | null
+          verse_subtitle_persian: string | null
+          verse_subtitle_russian: string | null
+          verse_subtitle_swedish: string | null
           verse_subtitle_tamil: string | null
           verse_subtitle_turkish: string | null
-          verse_text_bahasa: string
-          verse_text_french: string
-          verse_text_german: string
-          verse_text_persian: string
-          verse_text_russian: string
-          verse_text_swedish: string
-          verse_text_tamil: string
-          verse_text_turkish: string
+          verse_text_bahasa: string | null
+          verse_text_french: string | null
+          verse_text_german: string | null
+          verse_text_persian: string | null
+          verse_text_russian: string | null
+          verse_text_swedish: string | null
+          verse_text_tamil: string | null
+          verse_text_turkish: string | null
         }
         Insert: {
+          chapter_title_bahasa?: string | null
+          chapter_title_french?: string | null
+          chapter_title_german?: string | null
+          chapter_title_persian?: string | null
+          chapter_title_russian?: string | null
+          chapter_title_swedish?: string | null
+          chapter_title_tamil?: string | null
+          chapter_title_turkish?: string | null
+          verse_footnote_bahasa?: string | null
+          verse_footnote_french?: string | null
           verse_footnote_german?: string | null
+          verse_footnote_persian?: string | null
+          verse_footnote_russian?: string | null
+          verse_footnote_swedish?: string | null
           verse_footnote_tamil?: string | null
           verse_footnote_turkish?: string | null
           verse_id: string
+          verse_subtitle_bahasa?: string | null
+          verse_subtitle_french?: string | null
+          verse_subtitle_german?: string | null
+          verse_subtitle_persian?: string | null
+          verse_subtitle_russian?: string | null
+          verse_subtitle_swedish?: string | null
           verse_subtitle_tamil?: string | null
           verse_subtitle_turkish?: string | null
-          verse_text_bahasa: string
-          verse_text_french: string
-          verse_text_german: string
-          verse_text_persian: string
-          verse_text_russian: string
-          verse_text_swedish: string
-          verse_text_tamil: string
-          verse_text_turkish: string
+          verse_text_bahasa?: string | null
+          verse_text_french?: string | null
+          verse_text_german?: string | null
+          verse_text_persian?: string | null
+          verse_text_russian?: string | null
+          verse_text_swedish?: string | null
+          verse_text_tamil?: string | null
+          verse_text_turkish?: string | null
         }
         Update: {
+          chapter_title_bahasa?: string | null
+          chapter_title_french?: string | null
+          chapter_title_german?: string | null
+          chapter_title_persian?: string | null
+          chapter_title_russian?: string | null
+          chapter_title_swedish?: string | null
+          chapter_title_tamil?: string | null
+          chapter_title_turkish?: string | null
+          verse_footnote_bahasa?: string | null
+          verse_footnote_french?: string | null
           verse_footnote_german?: string | null
+          verse_footnote_persian?: string | null
+          verse_footnote_russian?: string | null
+          verse_footnote_swedish?: string | null
           verse_footnote_tamil?: string | null
           verse_footnote_turkish?: string | null
           verse_id?: string
+          verse_subtitle_bahasa?: string | null
+          verse_subtitle_french?: string | null
+          verse_subtitle_german?: string | null
+          verse_subtitle_persian?: string | null
+          verse_subtitle_russian?: string | null
+          verse_subtitle_swedish?: string | null
           verse_subtitle_tamil?: string | null
           verse_subtitle_turkish?: string | null
-          verse_text_bahasa?: string
-          verse_text_french?: string
-          verse_text_german?: string
-          verse_text_persian?: string
-          verse_text_russian?: string
-          verse_text_swedish?: string
-          verse_text_tamil?: string
-          verse_text_turkish?: string
+          verse_text_bahasa?: string | null
+          verse_text_french?: string | null
+          verse_text_german?: string | null
+          verse_text_persian?: string | null
+          verse_text_russian?: string | null
+          verse_text_swedish?: string | null
+          verse_text_tamil?: string | null
+          verse_text_turkish?: string | null
         }
         Relationships: []
       }
@@ -522,6 +603,30 @@ export type Database = {
           transliterated_text?: string
           verse_id?: string
           word_index?: number
+        }
+        Relationships: []
+      }
+      "ws-verse-of-the-day": {
+        Row: {
+          day: number
+          id: string | null
+          month: number
+          verse_id: string
+          year: number
+        }
+        Insert: {
+          day: number
+          id?: string | null
+          month: number
+          verse_id: string
+          year: number
+        }
+        Update: {
+          day?: number
+          id?: string | null
+          month?: number
+          verse_id?: string
+          year?: number
         }
         Relationships: []
       }

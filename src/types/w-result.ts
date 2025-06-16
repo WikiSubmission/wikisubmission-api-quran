@@ -78,6 +78,7 @@ export interface ParsedOptions {
     sort_results?: boolean;
     normalize_god_casing?: boolean;
     include_word_by_word?: boolean;
+    include_language?: string;
     // Search-specific options
     search_strategy?: "exact" | "fuzzy";
     search_language?: string;

@@ -9,6 +9,7 @@ export function parseQuranQuery(query: string, queryParams: any): WResult["reque
         sort_results: queryParams.sort_results === "true",
         normalize_god_casing: queryParams.normalize_god_casing === "true",
         include_word_by_word: queryParams.include_word_by_word === "true",
+        include_language: queryParams.include_language,
     };
 
     // Handle direct query parameters when no query string is provided

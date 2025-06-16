@@ -7,6 +7,7 @@ import { Database } from "../types/generated/database.types";
 import { Server } from "../server";
 import Bottleneck from "bottleneck";
 import NodeCache from "node-cache";
+import { getSupabaseClient } from "../utils/get-supabase-client";
 
 export class WData<T> {
   supabaseClient: SupabaseClient | null = null;
@@ -47,6 +48,11 @@ export class WData<T> {
       const newData = await this.opts.finalAdjustments(this.data);
       this.setData(newData);
     }
+    if (!this.data) {
+      // Fall back to local version in case an update voids/corrupts the data.
+      Server.instance.log(`>   "${this.table}" no data found, falling back to local version.`);
+      this.setDataFromLocalFiles();
+    }
   }
 
   private async setDataFromLocalFiles() {
@@ -59,7 +65,7 @@ export class WData<T> {
 
   private async setDataFromSupabaseInBackground() {
     try {
-      this.supabaseClient = createClient<Database>(process.env.SUPABASE_URL!, process.env.SUPABASE_API_KEY!);
+      this.supabaseClient = getSupabaseClient();
       Server.instance.log(`Starting fetch for ${this.table}`);
       const startTimestamp = Date.now();
       const request = await this.supabaseClient.from(this.table).select("*");

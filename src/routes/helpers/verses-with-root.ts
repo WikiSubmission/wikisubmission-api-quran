@@ -1,4 +1,5 @@
-import { RootWordMap } from "../../_localdata/ws-root-word-map";
+import { QuranRootWords } from "../../data/data-quran-root-words";
+import { Database } from "../../types/generated/database.types";
 import { WRoute } from "../../types/w-route";
 import { parseQueryString } from "../../utils/parse-query-string";
 
@@ -18,14 +19,14 @@ export default function route(): WRoute {
                 return;
             }
 
-            const result = RootWordMap[query as keyof typeof RootWordMap];
+            const result = QuranRootWords[query as keyof typeof QuranRootWords];
 
             if (!result) {
                 res.code(404).send({ error: `No verses found found with root '${query}'` });
                 return;
             }
 
-            res.code(200).send(result as { verse_id: string; word_index: number }[]);
+            res.code(200).send(result as Database["public"]["Tables"]["ws-quran-word-by-word"]["Row"][]);
         },
     };
 }
