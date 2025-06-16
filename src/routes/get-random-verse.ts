@@ -1,5 +1,4 @@
 import { WRoute } from "../types/w-route";
-import { WResult } from "../types/w-result";
 import { Quran } from "../data/data-quran";
 
 export default function route(): WRoute {
@@ -7,30 +6,11 @@ export default function route(): WRoute {
         url: "/random-verse",
         method: "GET",
         handler: async (req, res) => {
-            const result =
-                Quran.data.length > 0
-                    ? [Quran.data[Math.floor(Math.random() * Quran.data.length)]]
-                    : [];
+            const verse = Quran.data[Math.floor(Math.random() * Quran.data.length)];
+            const verseId = verse?.verse_id || "1:1";
 
-            res.code(result ? 200 : 404).send({
-                message: result ? `Found random verse: ${result[0].verse_id}` : "No random verse found",
-                request: {
-                    type: "verse",
-                    raw_query: "random-verse",
-                    parsed_query: {
-                        chapter: result[0].chapter_number,
-                        verse: result[0].verse_number,
-                    },
-                    parsed_options: {},
-                },
-                response: {
-                    data: result || [],
-                    copyright: {
-                        text: "Dr. Rashad Khalifa, Ph.D.",
-                        url: "https://masjidtucson.org/"
-                    }
-                },
-            } as WResult);
+            const queryString = new URLSearchParams(req.query as Record<string, string>).toString();
+            res.code(302).redirect(`/${verseId}${queryString ? `?${queryString}` : ""}`);
         },
     };
 }
