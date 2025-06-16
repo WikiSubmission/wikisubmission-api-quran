@@ -28,9 +28,9 @@ quran.wikisubmission.org
 - [x] search_ignore_commentary (default: false)
 - [x] search_apply_highlight (default: false)
 
-### Status
+## Status
 
-Still in early stages; to be expanded.
+Still in early stages; to be expanded, standardized, and documented more thorougly.
 
 ## License
 
