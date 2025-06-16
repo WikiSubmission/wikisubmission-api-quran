@@ -6,24 +6,21 @@ export default function route(): WRoute {
         url: "/recitations/:verse_id",
         method: "GET",
         handler: async (req, res) => {
-            const { verse_id } = req.params as {
-                verse_id: string;
-            };
+            const { verse_id } = req.params as { verse_id: string };
 
             const resolvedVerse = Quran.data.find(v => v.verse_id === verse_id);
             if (!resolvedVerse) {
                 return res.status(404).send(`Verse "${verse_id}" not found`);
             }
 
-            var index: number | undefined;
-
-            if (verse_id.split(":")[1] === "0") {
-                index = 1;
-            }
+            // Try to find audio index via traditional mapping for CDN
             const indexEntry = getTraditionalQuranIndex().find(v => v.verse_id === verse_id);
 
-            if (indexEntry) {
-                index = indexEntry.index;
+            let index: number | undefined = indexEntry?.index;
+
+            // Fallback on verse 0
+            if (!index && verse_id.split(":")[1] === "0") {
+                index = 1;
             }
 
             if (!index) {
@@ -42,9 +39,7 @@ export default function route(): WRoute {
     };
 }
 
-// Traditional index includes 9:128–129 manually inserted
 function getTraditionalQuranIndex(): { verse_id: string; index: number }[] {
-
     const indexed: { verse_id: string; index: number }[] = [];
     let i = 1;
 
