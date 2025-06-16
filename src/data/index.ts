@@ -1,5 +1,4 @@
 import {
-  createClient,
   RealtimePostgresChangesPayload,
   SupabaseClient,
 } from "@supabase/supabase-js";
