@@ -30,7 +30,7 @@ export default function route(): WRoute {
             const response = {
                 verse_id,
                 mishary: `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${index}.mp3`,
-                basit: `https://cdn.islamic.network/quran/audio/128/ar.basit/${index}.mp3`,
+                basit: `https://cdn.islamic.network/quran/audio/64/ar.abdulsamad/${index}.mp3`,
                 minshawi: `https://cdn.islamic.network/quran/audio/128/ar.minshawi/${index}.mp3`,
             };
 
