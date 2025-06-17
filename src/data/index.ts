@@ -100,41 +100,46 @@ export class WData<T> {
   }
 
   private handleSorting(): void {
-    const { numericalSortKey, alphabeticallySortKeys } = this.opts || {};
+    try {
+      const { numericalSortKey, alphabeticallySortKeys } = this.opts || {};
 
-    if (!Array.isArray(this.data)) {
-      return;
-    }
+      if (!Array.isArray(this.data)) {
+        return;
+      }
 
-    // Check if numericalSortKey exists and sort by that key if it does
-    if (numericalSortKey) {
-      this.data.sort((a: any, b: any) => {
-        const valueA = a[numericalSortKey];
-        const valueB = b[numericalSortKey];
+      // Check if numericalSortKey exists and sort by that key if it does
+      if (numericalSortKey) {
+        this.data.sort((a: any, b: any) => {
+          const valueA = a[numericalSortKey];
+          const valueB = b[numericalSortKey];
 
-        // Handle undefined or invalid values gracefully
-        if (valueA === undefined || valueB === undefined) {
-          throw new Error(
-            `Property "${numericalSortKey}" is missing in some data items.`,
-          );
-        }
+          // Handle undefined or invalid values gracefully
+          if (valueA === undefined || valueB === undefined) {
+            throw new Error(
+              `Property "${numericalSortKey}" is missing in some data items.`,
+            );
+          }
 
-        return Number(valueA) - Number(valueB);
-      });
-    }
+          return Number(valueA) - Number(valueB);
+        });
+      }
 
-    // Sort keys alphabetically if the option is set
-    if (alphabeticallySortKeys) {
-      this.data = this.data.map((item) => sortKeysAlphabetically(item)) as T;
-    }
+      // Sort keys alphabetically if the option is set
+      if (alphabeticallySortKeys) {
+        this.data = this.data.map((item) => sortKeysAlphabetically(item)) as T;
+      }
 
-    function sortKeysAlphabetically<T extends object>(obj: T): T {
-      const sortedKeys = Object.keys(obj).sort();
-      const sortedObj: Record<string, unknown> = {};
-      sortedKeys.forEach((key) => {
-        sortedObj[key] = obj[key as keyof typeof obj];
-      });
-      return sortedObj as T; // Return a new object with sorted keys
+      function sortKeysAlphabetically<T extends object>(obj: T): T {
+        const sortedKeys = Object.keys(obj).sort();
+        const sortedObj: Record<string, unknown> = {};
+        sortedKeys.forEach((key) => {
+          sortedObj[key] = obj[key as keyof typeof obj];
+        });
+        return sortedObj as T; // Return a new object with sorted keys
+      }
+    } catch (error: any) {
+      Server.instance.error(`Error sorting data for "${this.table}": ${error?.message || "--"}`, true);
+      console.error(error);
     }
   }
 
@@ -187,11 +192,16 @@ export class WData<T> {
         },
       )
       .subscribe(async (status) => {
-        if (status === "SUBSCRIBED") {
-          Server.instance.log(`>   "${this.table}" auto sync ON`);
-        } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
-          console.warn(`>   "${this.table}" auto sync RECONNECTING...`);
-          await this.subscribeToDataChanges(onChange);
+        try {
+          if (status === "SUBSCRIBED") {
+            Server.instance.log(`>   "${this.table}" auto sync ON`);
+          } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+            console.warn(`>   "${this.table}" auto sync RECONNECTING...`);
+            await this.subscribeToDataChanges(onChange);
+          }
+        } catch (error: any) {
+          Server.instance.error(`Error subscribing to data changes for "${this.table}": ${error?.message || "--"}`, true);
+          console.error(error);
         }
       });
   }
