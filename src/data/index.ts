@@ -4,9 +4,9 @@ import {
 } from "@supabase/supabase-js";
 import { Database } from "../types/generated/database.types";
 import { Server } from "../server";
+import { getSupabaseClient } from "../utils/get-supabase-client";
 import Bottleneck from "bottleneck";
 import NodeCache from "node-cache";
-import { getSupabaseClient } from "../utils/get-supabase-client";
 
 export class WData<T> {
   supabaseClient: SupabaseClient | null = null;
@@ -196,12 +196,12 @@ export class WData<T> {
           if (status === "SUBSCRIBED") {
             Server.instance.log(`>   "${this.table}" auto sync ON`);
           } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
-            console.warn(`>   "${this.table}" auto sync RECONNECTING...`);
+            Server.instance.warn(`>   "${this.table}" auto sync RECONNECTING...`);
             await this.subscribeToDataChanges(onChange);
           }
         } catch (error: any) {
-          Server.instance.error(`Error subscribing to data changes for "${this.table}": ${error?.message || "--"}`, true);
-          console.error(error);
+          Server.instance.error(`Error subscribing to data changes for "${this.table}":`);
+          Server.instance.error(error);
         }
       });
   }
