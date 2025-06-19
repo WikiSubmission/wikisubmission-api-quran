@@ -12,6 +12,8 @@ export class WData<T> {
   supabaseClient: SupabaseClient | null = null;
   data: T | [] = [];
   cache = new NodeCache();
+  // Add channel tracking
+  private currentChannel: any = null;
 
   static rateLimiter = new Bottleneck({
     maxConcurrent: 1,
@@ -178,8 +180,20 @@ export class WData<T> {
     ) => Promise<void>,
   ): Promise<void> {
     if (!this.supabaseClient) return;
-    this.supabaseClient
-      .channel(`changes:${this.table}`)
+
+    // Clean up existing channel if it exists
+    if (this.currentChannel) {
+      try {
+        await this.currentChannel.unsubscribe();
+      } catch (error) {
+        // Ignore unsubscribe errors
+      }
+      this.currentChannel = null;
+    }
+
+    // Create a new channel instance
+    this.currentChannel = this.supabaseClient
+      .channel(`changes:${this.table}:${Date.now()}`) // Add timestamp to ensure unique channel names
       .on(
         "postgres_changes",
         {
@@ -197,7 +211,10 @@ export class WData<T> {
             Server.instance.log(`>   "${this.table}" auto sync ON`);
           } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
             Server.instance.warn(`>   "${this.table}" auto sync RECONNECTING...`);
-            await this.subscribeToDataChanges(onChange);
+            // Wait a bit before reconnecting to avoid rapid reconnection attempts
+            setTimeout(async () => {
+              await this.subscribeToDataChanges(onChange);
+            }, 5000);
           }
         } catch (error: any) {
           Server.instance.error(`Error subscribing to data changes for "${this.table}":`);
