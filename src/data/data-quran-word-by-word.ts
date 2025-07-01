@@ -3,4 +3,8 @@ import { Database } from "../types/generated/database.types";
 
 export const QuranWordByWord = new WData<
   Database["public"]["Tables"]["ws-quran-word-by-word"]["Row"][]
->("ws-quran-word-by-word");
+>("ws-quran-word-by-word", {
+  gracefullyRefreshOnChanges: { 
+    minutesBeforeResync: 1
+  }
+});
