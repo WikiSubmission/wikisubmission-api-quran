@@ -58,6 +58,10 @@ export default function route(): WRoute {
                 } else if (queryText === "chapter-of-the-day") {
                     const chapterNumber = await getChapterOfTheDay();
                     result.response.data = getVersesByChapter(chapterNumber);
+                } else if (queryText.startsWith("root:")) {
+                    const root = queryText.split(":")[1];
+                    const encodedRoot = encodeURIComponent(root);
+                    res.code(302).redirect(`/verses-with-root/${encodedRoot}`);
                 } else {
                     result.response.data = runSearch(queryText, parsed_options);
                     if (parsed_options.search_apply_highlight) {
