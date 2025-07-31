@@ -13,4 +13,4 @@ export default function route(): WRoute {
             res.code(302).redirect(`/${verseId}${queryString ? `?${queryString}` : ""}`);
         },
     };
-}ƒ
+}
