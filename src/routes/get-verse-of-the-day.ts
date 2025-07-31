@@ -1,16 +1,24 @@
 import { WRoute } from "../types/w-route";
-import { getVerseOfTheDay } from "../utils/random-content";
+import { getVerseOfTheDayWithOptions } from "../utils/random-content";
+import { parseQuranQuery } from "../utils/parse-quran-query";
 
 export default function route(): WRoute {
     return {
         url: "/verse-of-the-day",
         method: "GET",
         handler: async (req, res) => {
-            const queryString = new URLSearchParams(req.query as Record<string, string>).toString();
-            const verse = await getVerseOfTheDay();
-            const verseId = verse?.verse_id || "1:1";
+            const parsedRequest = parseQuranQuery("verse-of-the-day", req.query);
+            const { parsed_options } = parsedRequest;
 
-            res.code(302).redirect(`/${verseId}${queryString ? `?${queryString}` : ""}`);
+            const verses = await getVerseOfTheDayWithOptions(parsed_options);
+            
+            res.code(200).send({
+                message: `Found ${verses.length} verse of the day`,
+                request: parsedRequest,
+                response: {
+                    data: verses,
+                },
+            });
         },
     };
 }

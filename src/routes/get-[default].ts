@@ -1,16 +1,21 @@
 import { WRoute } from "../types/w-route";
 import { WResult } from "../types/w-result";
-import { Quran } from "../data/data-quran";
-import { QuranWordByWord } from "../data/data-quran-word-by-word";
-import { QuranForeign } from "../data/data-quran-foreign";
 import { parseQuranQuery } from "../utils/parse-quran-query";
 import { parseQueryString } from "../utils/parse-query-string";
-import { highlightQuery } from "../utils/highlight-query";
-import { searchStrategy } from "../utils/search-strategy";
-import { dynamicPropertyAccess } from "../utils/dynamic-property-access";
-import { resolveLanguage } from "../utils/resolve-language";
-import { getRandomVerse, getRandomChapter, getVerseOfTheDay, getChapterOfTheDay } from "../utils/random-content";
-import fill from "fill-range";
+import { 
+    getRandomVerseWithOptions, 
+    getRandomChapterWithOptions, 
+    getVerseOfTheDayWithOptions, 
+    getChapterOfTheDayWithOptions 
+} from "../utils/random-content";
+import { 
+    getVersesByChapter, 
+    getVerse, 
+    getVersesInRange, 
+    getMultipleVerses, 
+    runSearch, 
+    processQueryResult 
+} from "../utils/query-processing";
 
 export default function route(): WRoute {
     return {
@@ -28,10 +33,6 @@ export default function route(): WRoute {
                 request: parsedRequest,
                 response: {
                     data: [],
-                    copyright: {
-                        text: "© Rashad Khalifa, Ph.D.",
-                        url: "https://www.masjidtucson.org/submission/faq/rashad_khalifa_summary.html",
-                    },
                 },
             };
 
@@ -49,37 +50,23 @@ export default function route(): WRoute {
                 if (queryText.length <= 2) return res.code(400).send({ error: "Query must be at least 3 characters" });
 
                 if (queryText === "random-verse") {
-                    result.response.data = [getRandomVerse()];
+                    result.response.data = getRandomVerseWithOptions(parsed_options);
                 } else if (queryText === "random-chapter") {
-                    result.response.data = getVersesByChapter(getRandomChapter());
+                    result.response.data = getRandomChapterWithOptions(parsed_options);
                 } else if (queryText === "verse-of-the-day") {
-                    const verse = await getVerseOfTheDay();
-                    result.response.data = verse ? [verse] : [];
+                    result.response.data = await getVerseOfTheDayWithOptions(parsed_options);
                 } else if (queryText === "chapter-of-the-day") {
-                    const chapterNumber = await getChapterOfTheDay();
-                    result.response.data = getVersesByChapter(chapterNumber);
+                    result.response.data = await getChapterOfTheDayWithOptions(parsed_options);
                 } else if (queryText.startsWith("root:")) {
                     const root = queryText.split(":")[1];
                     const encodedRoot = encodeURIComponent(root);
                     res.code(302).redirect(`/verses-with-root/${encodedRoot}`);
                 } else {
-                    result.response.data = runSearch(queryText, parsed_options);
-                    if (parsed_options.search_apply_highlight) {
-                        result.response.data = applyHighlights(result.response.data, queryText, parsed_options);
-                    }
+                    result.response.data = processQueryResult(runSearch(queryText, parsed_options), parsed_options, queryText);
                 }
-            }
-
-            if (parsed_options.include_word_by_word) {
-                result.response.data = addWordByWord(result.response.data);
-            }
-
-            if (parsed_options.include_language) {
-                result.response.data = addForeignLanguageData(result.response.data, parsed_options.include_language);
-            }
-
-            if (parsed_options.sort_results === true) {
-                result.response.data.sort((a, b) => a.verse_index - b.verse_index);
+            } else {
+                // For non-search types, apply query processing
+                result.response.data = processQueryResult(result.response.data, parsed_options);
             }
 
             result.message = result.response.data.length
@@ -98,114 +85,3 @@ export default function route(): WRoute {
     };
 }
 
-function getVersesByChapter(chapter: number) {
-    return Quran.data.filter(v => v.chapter_number === chapter).sort((a, b) => a.verse_index - b.verse_index);
-}
-
-function getVerse(chapter: number, verse: number) {
-    return Quran.data.filter(v => v.chapter_number === chapter && v.verse_number === verse);
-}
-
-function getVersesInRange(chapter: number, start: number, end: number) {
-    const verseNumbers = fill(start, end);
-    return Quran.data.filter(v => v.chapter_number === chapter && verseNumbers.includes(v.verse_number));
-}
-
-function getMultipleVerses(verses: any[], sort: boolean) {
-    const all = verses.flatMap(({ chapter, verse, verse_end }, i) => {
-        return verse_end
-            ? Array.from({ length: verse_end - verse + 1 }, (_, idx) => ({
-                chapter,
-                verse: verse + idx,
-                originalIndex: i,
-            }))
-            : [{ chapter, verse, originalIndex: i }];
-    });
-
-    let matched = all.map(({ chapter, verse, originalIndex }) => {
-        const match = Quran.data.find(v => v.chapter_number === chapter && v.verse_number === verse);
-        return match ? { ...match, originalIndex } : null;
-    }).filter(Boolean) as any[];
-
-    if (!sort) matched.sort((a, b) => a.originalIndex - b.originalIndex);
-    return matched.map(({ originalIndex, ...v }) => v);
-}
-
-function runSearch(queryText: string, options: any) {
-    return Quran.data.filter(v => searchStrategy(v, queryText, options));
-}
-
-function applyHighlights(verses: any[], queryText: string, options: any) {
-    const lang = resolveLanguage(options.search_language || "en");
-
-    return verses.map(verse => {
-        const copy = { ...verse };
-
-        const verseText = dynamicPropertyAccess.text(verse, lang);
-        const highlightedText = highlightQuery(queryText, verseText, "markdown");
-        if (highlightedText) {
-            const textField = lang === "english" ? "verse_text_english" : `verse_text_${lang}`;
-            copy[textField] = highlightedText;
-        }
-
-        if (!options.search_ignore_commentary) {
-            const subtitle = dynamicPropertyAccess.subtitle(verse, lang);
-            const footnote = dynamicPropertyAccess.footnote(verse, lang);
-
-            const hSubtitle = highlightQuery(queryText, subtitle, "markdown");
-            const hFootnote = highlightQuery(queryText, footnote, "markdown");
-
-            if (hSubtitle) {
-                const subtitleField = lang === "english" ? "verse_subtitle_english" : `verse_subtitle_${lang}`;
-                copy[subtitleField] = hSubtitle;
-            }
-
-            if (hFootnote) {
-                const footnoteField = lang === "english" ? "verse_footnote_english" : `verse_footnote_${lang}`;
-                copy[footnoteField] = hFootnote;
-            }
-        }
-
-        return copy;
-    });
-}
-
-function addWordByWord(data: any[]) {
-    return data.map(verse => ({
-        ...verse,
-        word_by_word: QuranWordByWord.data.filter(w => w.verse_id === verse.verse_id),
-    }));
-}
-
-function addForeignLanguageData(data: any[], language: string) {
-    const resolvedLanguage = resolveLanguage(language);
-
-    return data.map(verse => {
-        const foreignData = QuranForeign.data.find(f => f.verse_id === verse.verse_id);
-        if (!foreignData) return verse;
-
-        const languageFields = {
-            text: `verse_text_${resolvedLanguage}`,
-            subtitle: `verse_subtitle_${resolvedLanguage}`,
-            footnote: `verse_footnote_${resolvedLanguage}`,
-            chapter_title: `chapter_title_${resolvedLanguage}`
-        };
-
-        const enhancedVerse = { ...verse };
-
-        // Append all fields, falling back to English if needed
-        enhancedVerse[languageFields.text] =
-            foreignData[languageFields.text as keyof typeof foreignData] ?? verse.verse_text_english;
-
-        enhancedVerse[languageFields.subtitle] =
-            foreignData[languageFields.subtitle as keyof typeof foreignData] ?? verse.verse_subtitle_english ?? null;
-
-        enhancedVerse[languageFields.footnote] =
-            foreignData[languageFields.footnote as keyof typeof foreignData] ?? verse.verse_footnote_english ?? null;
-
-        enhancedVerse[languageFields.chapter_title] =
-            foreignData[languageFields.chapter_title as keyof typeof foreignData] ?? verse.chapter_title_english;
-
-        return enhancedVerse;
-    });
-}

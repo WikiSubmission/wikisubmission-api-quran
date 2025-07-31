@@ -1,15 +1,28 @@
 import { WRoute } from "../types/w-route";
-import { getChapterOfTheDay } from "../utils/random-content";
+import { getChapterOfTheDayWithOptions } from "../utils/random-content";
+import { parseQuranQuery } from "../utils/parse-quran-query";
 
 export default function route(): WRoute {
     return {
         url: "/chapter-of-the-day",
         method: "GET",
         handler: async (req, res) => {
-            const queryString = new URLSearchParams(req.query as Record<string, string>).toString();
-            const chapterNumber = await getChapterOfTheDay();
+            const parsedRequest = parseQuranQuery("chapter-of-the-day", req.query);
+            const { parsed_options } = parsedRequest;
 
-            res.code(302).redirect(`/${chapterNumber}${queryString ? `?${queryString}` : ""}`);
+            const verses = await getChapterOfTheDayWithOptions(parsed_options);
+            
+            res.code(200).send({
+                message: `Found ${verses.length} verses in chapter of the day`,
+                request: parsedRequest,
+                response: {
+                    data: verses,
+                    copyright: {
+                        text: "© Rashad Khalifa, Ph.D.",
+                        url: "https://www.masjidtucson.org/submission/faq/rashad_khalifa_summary.html",
+                    },
+                },
+            });
         },
     };
 }

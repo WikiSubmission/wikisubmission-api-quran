@@ -10,10 +10,6 @@ export interface WResult {
     // [The actual response]
     response: {
         data: any[];
-        copyright?: {
-            text: string;
-            url: string;
-        };
     };
 }
 
