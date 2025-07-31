@@ -49,9 +49,9 @@ export class WData<T> {
       const newData = await this.opts.finalAdjustments(this.data);
       this.setData(newData);
     }
-    if (!this.data) {
+    if (!this.data || (Array.isArray(this.data) && this.data.length === 0)) {
       // Fall back to local version in case an update voids/corrupts the data.
-      Server.instance.log(`>   "${this.table}" no data found, falling back to local version.`);
+      Server.instance.warn(`>   "${this.table}" no data found, falling back to local version.`);
       this.setDataFromLocalFiles();
     }
   }
@@ -70,7 +70,7 @@ export class WData<T> {
       Server.instance.log(`Starting fetch for ${this.table}`);
       const startTimestamp = Date.now();
       const request = await this.supabaseClient.from(this.table).select("*");
-      if (request.status === 200 && request.data) {
+      if (request.status === 200 && request.data && request.data.length > 0) {
         this.setData(request.data as T);
         Server.instance.log(
           `${this.table} Fetched! (${Date.now() - startTimestamp}ms)`,
@@ -83,8 +83,8 @@ export class WData<T> {
         }
       } else {
         Server.instance.error(
-          `Error fetching data for "${this.table}": ${request.error?.message || "--"
-          }`, true,
+          `Error fetching data for "${this.table}": ${request.error?.message || "Supabase / RLS Error"
+          }`
         );
         console.error(request);
       }
