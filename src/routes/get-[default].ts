@@ -48,9 +48,17 @@ export default function route(): WRoute {
                 if (queryText.length <= 2) return res.code(400).send({ error: "Query must be at least 3 characters" });
 
                 if (queryText === "random-verse") {
-                    result.response.data = getRandomVerse();
+                    res.code(302).redirect("/random-verse");
+                    return;
                 } else if (queryText === "random-chapter") {
-                    result.response.data = getRandomChapter();
+                    res.code(302).redirect("/random-chapter");
+                    return;
+                } else if (queryText === "verse-of-the-day") {
+                    res.code(302).redirect("/verse-of-the-day");
+                    return;
+                } else if (queryText === "chapter-of-the-day") {
+                    res.code(302).redirect("/chapter-of-the-day");
+                    return;
                 } else {
                     result.response.data = runSearch(queryText, parsed_options);
                     if (parsed_options.search_apply_highlight) {
@@ -118,16 +126,6 @@ function getMultipleVerses(verses: any[], sort: boolean) {
 
     if (!sort) matched.sort((a, b) => a.originalIndex - b.originalIndex);
     return matched.map(({ originalIndex, ...v }) => v);
-}
-
-function getRandomChapter() {
-    const chapter = Math.floor(Math.random() * 114) + 1;
-    return getVersesByChapter(chapter);
-}
-
-function getRandomVerse() {
-    const idx = Math.floor(Math.random() * Quran.data.length);
-    return [Quran.data[idx]];
 }
 
 function runSearch(queryText: string, options: any) {
