@@ -9,6 +9,7 @@ import { highlightQuery } from "../utils/highlight-query";
 import { searchStrategy } from "../utils/search-strategy";
 import { dynamicPropertyAccess } from "../utils/dynamic-property-access";
 import { resolveLanguage } from "../utils/resolve-language";
+import { getRandomVerse, getRandomChapter, getVerseOfTheDay, getChapterOfTheDay } from "../utils/random-content";
 import fill from "fill-range";
 
 export default function route(): WRoute {
@@ -48,17 +49,15 @@ export default function route(): WRoute {
                 if (queryText.length <= 2) return res.code(400).send({ error: "Query must be at least 3 characters" });
 
                 if (queryText === "random-verse") {
-                    res.code(302).redirect("/random-verse");
-                    return;
+                    result.response.data = [getRandomVerse()];
                 } else if (queryText === "random-chapter") {
-                    res.code(302).redirect("/random-chapter");
-                    return;
+                    result.response.data = getVersesByChapter(getRandomChapter());
                 } else if (queryText === "verse-of-the-day") {
-                    res.code(302).redirect("/verse-of-the-day");
-                    return;
+                    const verse = await getVerseOfTheDay();
+                    result.response.data = verse ? [verse] : [];
                 } else if (queryText === "chapter-of-the-day") {
-                    res.code(302).redirect("/chapter-of-the-day");
-                    return;
+                    const chapterNumber = await getChapterOfTheDay();
+                    result.response.data = getVersesByChapter(chapterNumber);
                 } else {
                     result.response.data = runSearch(queryText, parsed_options);
                     if (parsed_options.search_apply_highlight) {
