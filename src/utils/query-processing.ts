@@ -89,7 +89,7 @@ export function addWordByWord(data: any[]) {
 export function addForeignLanguageData(data: any[], language: string) {
     // Split by comma and trim whitespace to handle multiple languages
     const languages = language.split(',').map(lang => lang.trim());
-    
+
     return data.map(verse => {
         const foreignData = QuranForeign.data.find(f => f.verse_id === verse.verse_id);
         if (!foreignData) return verse;
@@ -99,7 +99,7 @@ export function addForeignLanguageData(data: any[], language: string) {
         // Process each language
         languages.forEach(lang => {
             const resolvedLanguage = resolveLanguage(lang);
-            
+
             const languageFields = {
                 text: `verse_text_${resolvedLanguage}`,
                 subtitle: `verse_subtitle_${resolvedLanguage}`,
@@ -141,6 +141,17 @@ export function processQueryResult(data: any[], options: any, queryText?: string
     // Add foreign language data if requested
     if (options.include_language) {
         processedData = addForeignLanguageData(processedData, options.include_language);
+    }
+
+    // Normalize God casing if requested
+    if (options.normalize_god_casing === true) {
+        processedData = processedData.map(verse => {
+            const copy = { ...verse };
+            if (copy.verse_text_english) {
+                copy.verse_text_english = copy.verse_text_english.replace(/GOD/g, 'God');
+            }
+            return copy;
+        });
     }
 
     // Sort results if requested

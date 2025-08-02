@@ -2,19 +2,19 @@ import { WRoute } from "../types/w-route";
 import { WResult } from "../types/w-result";
 import { parseQuranQuery } from "../utils/parse-quran-query";
 import { parseQueryString } from "../utils/parse-query-string";
-import { 
-    getRandomVerseWithOptions, 
-    getRandomChapterWithOptions, 
-    getVerseOfTheDayWithOptions, 
-    getChapterOfTheDayWithOptions 
+import {
+    getRandomVerseWithOptions,
+    getRandomChapterWithOptions,
+    getVerseOfTheDayWithOptions,
+    getChapterOfTheDayWithOptions
 } from "../utils/random-content";
-import { 
-    getVersesByChapter, 
-    getVerse, 
-    getVersesInRange, 
-    getMultipleVerses, 
-    runSearch, 
-    processQueryResult 
+import {
+    getVersesByChapter,
+    getVerse,
+    getVersesInRange,
+    getMultipleVerses,
+    runSearch,
+    processQueryResult
 } from "../utils/query-processing";
 
 export default function route(): WRoute {
@@ -37,13 +37,13 @@ export default function route(): WRoute {
             };
 
             if (type === "chapter") {
-                result.response.data = getVersesByChapter(parsed_query.chapter);
+                result.response.data = processQueryResult(getVersesByChapter(parsed_query.chapter), parsed_options);
             } else if (type === "verse") {
-                result.response.data = getVerse(parsed_query.chapter, parsed_query.verse);
+                result.response.data = processQueryResult(getVerse(parsed_query.chapter, parsed_query.verse), parsed_options);
             } else if (type === "verse_range") {
-                result.response.data = getVersesInRange(parsed_query.chapter, parsed_query.verse, parsed_query.verse_end);
+                result.response.data = processQueryResult(getVersesInRange(parsed_query.chapter, parsed_query.verse, parsed_query.verse_end), parsed_options);
             } else if (type === "multiple_verses") {
-                result.response.data = getMultipleVerses(parsed_query, parsed_options.sort_results === true);
+                result.response.data = processQueryResult(getMultipleVerses(parsed_query, parsed_options.sort_results === true), parsed_options);
             } else if (type === "search") {
                 const queryText = parsed_query;
 
@@ -64,9 +64,6 @@ export default function route(): WRoute {
                 } else {
                     result.response.data = processQueryResult(runSearch(queryText, parsed_options), parsed_options, queryText);
                 }
-            } else {
-                // For non-search types, apply query processing
-                result.response.data = processQueryResult(result.response.data, parsed_options);
             }
 
             result.message = result.response.data.length
