@@ -65,6 +65,10 @@ export default function route(): WRoute {
                     const recitations = queryText.split(":")[1];
                     const encodedRecitations = encodeURIComponent(recitations);
                     res.code(302).redirect(`/recitations/${encodedRecitations}`);
+                } else if (queryText.startsWith("data:") && queryText.length > 5) {
+                    const data = queryText.split(":")[1];
+                    const encodedData = encodeURIComponent(data);
+                    res.code(302).redirect(`/data/${encodedData}`);
                 } else {
                     result.response.data = processQueryResult(runSearch(queryText, parsed_options), parsed_options, queryText);
                 }
