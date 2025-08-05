@@ -13,7 +13,7 @@ export default function route(): WRoute {
             const verses = await getChapterOfTheDayWithOptions(parsed_options);
             
             res.code(200).send({
-                message: `Found ${verses.length} verses in chapter of the day`,
+                message: `Success`,
                 request: parsedRequest,
                 response: {
                     data: verses,
