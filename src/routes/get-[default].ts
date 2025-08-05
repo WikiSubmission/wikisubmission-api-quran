@@ -58,15 +58,15 @@ export default function route(): WRoute {
                 } else if (queryText === "chapter-of-the-day") {
                     result.response.data = await getChapterOfTheDayWithOptions(parsed_options);
                 } else if (queryText.startsWith("root:") && queryText.length > 5) {
-                    const root = queryText.split(":")[1];
+                    const root = queryText.split("root:")[1];
                     const encodedRoot = encodeURIComponent(root);
                     res.code(302).redirect(`/verses-with-root/${encodedRoot}`);
                 } else if (queryText.startsWith("recitations:") && queryText.length > 12) {
-                    const recitations = queryText.split(":")[1];
+                    const recitations = queryText.split("recitations:")[1];
                     const encodedRecitations = encodeURIComponent(recitations);
                     res.code(302).redirect(`/recitations/${encodedRecitations}`);
                 } else if (queryText.startsWith("data:") && queryText.length > 5) {
-                    const data = queryText.split(":")[1];
+                    const data = queryText.split("data:")[1];
                     const encodedData = encodeURIComponent(data);
                     res.code(302).redirect(`/data/${encodedData}`);
                 } else {
