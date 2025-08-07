@@ -50,13 +50,13 @@ export function applyHighlights(verses: any[], queryText: string, options: any) 
     return verses.map(verse => {
         const copy = { ...verse };
 
+        // Always process verse text to replace asterisks
         const verseText = dynamicPropertyAccess.text(verse, lang);
         const highlightedText = highlightQuery(queryText, verseText, "markdown");
-        if (highlightedText) {
-            const textField = lang === "english" ? "verse_text_english" : `verse_text_${lang}`;
-            copy[textField] = highlightedText;
-        }
+        const textField = lang === "english" ? "verse_text_english" : `verse_text_${lang}`;
+        copy[textField] = highlightedText || verseText;
 
+        // Process commentary if not ignored
         if (!options.search_ignore_commentary) {
             const subtitle = dynamicPropertyAccess.subtitle(verse, lang);
             const footnote = dynamicPropertyAccess.footnote(verse, lang);
@@ -129,8 +129,8 @@ export function processQueryResult(data: any[], options: any, queryText?: string
     let processedData = [...data];
 
     // Apply highlights if needed
-    if (queryText && options.search_apply_highlight) {
-        processedData = applyHighlights(processedData, queryText, options);
+    if (options.search_apply_highlight) {
+        processedData = applyHighlights(processedData, queryText || "", options);
     }
 
     // Add word-by-word data if requested
