@@ -7,7 +7,11 @@ export class dynamicPropertyAccess {
     key: string,
     fallback?: string | null
   ): string | null {
-    return key in source ? String((source as any)[key]) : fallback ?? null;
+    if (!(key in source)) {
+      return fallback ?? null;
+    }
+    const value = (source as any)[key];
+    return value === null ? null : String(value);
   }
 
   static title(
