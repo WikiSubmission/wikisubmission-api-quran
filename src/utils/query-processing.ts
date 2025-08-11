@@ -7,6 +7,34 @@ import { resolveLanguage } from "./resolve-language";
 import { searchStrategy } from "./search-strategy";
 import fill from "fill-range";
 
+/**
+ * Handles text processing operations for Quran verses
+ */
+class TextProcessor {
+    /**
+     * Processes text by applying asterisk replacement and optional query highlighting
+     */
+    static processText(text: string | null | undefined, query: string = "", method: "markdown" | "html" = "markdown"): string | null {
+        if (!text) return null;
+        return highlightQuery(query, text, method);
+    }
+
+    /**
+     * Processes a text field with fallback to English
+     */
+    static processTextField(foreignText: string | null | undefined, englishFallback: string | null, query: string = ""): string | null {
+        if (!foreignText) return englishFallback;
+        return this.processText(foreignText, query) || foreignText;
+    }
+
+    /**
+     * Gets the appropriate field name for a language
+     */
+    static getLanguageField(field: string, language: string): string {
+        return `${field}_${language}`;
+    }
+}
+
 export function getVersesByChapter(chapter: number) {
     return Quran.data.filter(v => v.chapter_number === chapter).sort((a, b) => a.verse_index - b.verse_index);
 }
@@ -52,7 +80,7 @@ export function applyHighlights(verses: any[], queryText: string, options: any) 
 
         // Always process verse text to replace asterisks
         const verseText = dynamicPropertyAccess.text(verse, lang);
-        const highlightedText = highlightQuery(queryText, verseText, "markdown");
+        const highlightedText = TextProcessor.processText(verseText, queryText, "markdown");
         const textField = lang === "english" ? "verse_text_english" : `verse_text_${lang}`;
         copy[textField] = highlightedText || verseText;
 
@@ -61,8 +89,8 @@ export function applyHighlights(verses: any[], queryText: string, options: any) 
             const subtitle = dynamicPropertyAccess.subtitle(verse, lang);
             const footnote = dynamicPropertyAccess.footnote(verse, lang);
 
-            const hSubtitle = highlightQuery(queryText, subtitle, "markdown");
-            const hFootnote = highlightQuery(queryText, footnote, "markdown");
+            const hSubtitle = TextProcessor.processText(subtitle, queryText, "markdown");
+            const hFootnote = TextProcessor.processText(footnote, queryText, "markdown");
 
             if (hSubtitle) {
                 const subtitleField = lang === "english" ? "verse_subtitle_english" : `verse_subtitle_${lang}`;
@@ -100,30 +128,31 @@ export function addForeignLanguageData(data: any[], language: string) {
         languages.forEach(lang => {
             const resolvedLanguage = resolveLanguage(lang);
 
-            const languageFields = {
-                text: `verse_text_${resolvedLanguage}`,
-                subtitle: `verse_subtitle_${resolvedLanguage}`,
-                footnote: `verse_footnote_${resolvedLanguage}`,
-                chapter_title: `chapter_title_${resolvedLanguage}`
-            };
+            // Define the fields to process
+            const fields = ['verse_text', 'verse_subtitle', 'verse_footnote', 'chapter_title'];
 
-            // Append all fields, falling back to English if needed
-            enhancedVerse[languageFields.text] =
-                foreignData[languageFields.text as keyof typeof foreignData] ?? verse.verse_text_english;
+            fields.forEach(field => {
+                const fieldName = TextProcessor.getLanguageField(field, resolvedLanguage);
+                const englishField = field === 'chapter_title' ? 'chapter_title_english' : `${field}_english`;
 
-            enhancedVerse[languageFields.subtitle] =
-                foreignData[languageFields.subtitle as keyof typeof foreignData] ?? verse.verse_subtitle_english ?? null;
-
-            enhancedVerse[languageFields.footnote] =
-                foreignData[languageFields.footnote as keyof typeof foreignData] ?? verse.verse_footnote_english ?? null;
-
-            enhancedVerse[languageFields.chapter_title] =
-                foreignData[languageFields.chapter_title as keyof typeof foreignData] ?? verse.chapter_title_english;
+                if (field === 'chapter_title') {
+                    // Chapter titles don't need asterisk replacement
+                    enhancedVerse[fieldName] = foreignData[fieldName as keyof typeof foreignData] ?? verse[englishField];
+                } else {
+                    // Text fields need asterisk replacement
+                    enhancedVerse[fieldName] = TextProcessor.processTextField(
+                        foreignData[fieldName as keyof typeof foreignData],
+                        verse[englishField]
+                    );
+                }
+            });
         });
 
         return enhancedVerse;
     });
 }
+
+
 
 export function processQueryResult(data: any[], options: any, queryText?: string) {
     let processedData = [...data];
