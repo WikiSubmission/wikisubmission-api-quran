@@ -1,6 +1,5 @@
 import { WRoute } from "../types/w-route";
 import { getRandomChapterWithOptions } from "../utils/random-content";
-import { parseQueryString } from "../utils/parse-query-string";
 import { parseQuranQuery } from "../utils/parse-quran-query";
 
 export default function route(): WRoute {

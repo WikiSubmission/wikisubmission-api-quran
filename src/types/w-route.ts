@@ -1,5 +1,8 @@
 import { RouteOptions } from "fastify";
 
 export interface WRoute extends RouteOptions {
-    // TODO (add caching)
+    cache?: { 
+        duration: number;
+        durationType: "seconds" | "minutes" | "hours" | "days";
+    }
 }

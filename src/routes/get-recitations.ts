@@ -5,6 +5,10 @@ export default function route(): WRoute {
     return {
         url: "/recitations/:verse_id",
         method: "GET",
+        cache: {
+            duration: 1,
+            durationType: "minutes"
+        },
         handler: async (req, res) => {
             const { verse_id } = req.params as { verse_id: string };
 

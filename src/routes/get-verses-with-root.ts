@@ -11,6 +11,10 @@ export default function route(): WRoute {
     return {
         url: "/verses-with-root/:query?",
         method: "GET",
+        cache: {
+            duration: 1,
+            durationType: "minutes"
+        },
         handler: async (req, res) => {
             const query = parseQueryString(req.query, req.params);
 
