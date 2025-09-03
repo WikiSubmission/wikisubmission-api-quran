@@ -8,8 +8,8 @@ export default function route(): WRoute {
     url: "/attributes",
     method: "GET",
     cache: {
-      duration: 15,
-      durationType: "seconds",
+      duration: 19,
+      durationType: "hours",
     },
     handler: async (req, res) => {
       try {
