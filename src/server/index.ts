@@ -97,7 +97,6 @@ export class Server {
             route.cache.duration,
             route.cache.durationType,
           );
-          const cacheKey = `${route.method}:${route.url}`;
 
           // Store original handler
           const originalHandler = route.handler;
@@ -110,8 +109,11 @@ export class Server {
                 const payloadString = payload?.toString() || "";
                 const responseData = JSON.parse(payloadString);
 
+                // Generate cache key based on actual request URL (not route pattern)
+                const requestCacheKey = `${route.method}:${request.url}`;
+                
                 // Store the actual response data for caching
-                this.routeCache.set(cacheKey, {
+                this.routeCache.set(requestCacheKey, {
                   data: responseData,
                   timestamp: Date.now(),
                 });
@@ -148,8 +150,10 @@ export class Server {
 
           // Wrap handler with server-side caching
           route.handler = async (request, reply) => {
+            // Generate cache key based on request URL
+            const requestCacheKey = `${route.method}:${request.url}`;
             const now = Date.now();
-            const cacheEntry = this.routeCache.get(cacheKey);
+            const cacheEntry = this.routeCache.get(requestCacheKey);
 
             // Check if we have valid cached data
             if (
