@@ -19,20 +19,20 @@ interface SheetRow {
 export function convertSheetDataToGodAttributes(
   sheetData: SheetRow[],
 ): GodAttributesCardDataType[] {
-  return sheetData
+  const attributes = sheetData
     .filter((row) => row.Arabic && row.Arabic.trim() !== "") // Filter out empty rows
-    .map((row, index) => {
+    .map((row) => {
       const arabicText = row.Arabic.trim();
       const gematria = calculateGematria(arabicText);
 
       // Parse occurrences
       const occurences = parseOccurrences(row["Occured Verse"]);
 
-      // Calculate order in revelation from verse list (using first occurrence)
-      const orderInRevelation =
+      // Calculate verse position for sorting
+      const versePosition =
         occurences.length > 0
-          ? calculateOrderFromFirstOccurrence(occurences[0])
-          : index + 1;
+          ? calculateVersePosition(occurences[0])
+          : Number.MAX_SAFE_INTEGER;
 
       // Build text array for different languages
       const text: { text: string; language: Languages }[] = [];
@@ -81,19 +81,28 @@ export function convertSheetDataToGodAttributes(
       });
 
       return {
-        order_in_revelation: orderInRevelation,
         text,
         gematria,
         occurences,
         gematria_breakdown: getGematriaBreakdown(arabicText),
+        versePosition, // temporary field for sorting
       };
     })
-    .sort((a, b) => a.order_in_revelation - b.order_in_revelation); // Sort by revelation order
+    .sort((a, b) => a.versePosition - b.versePosition); // Sort by verse position
+
+  // Now assign sequential order_in_revelation (1, 2, 3, ...)
+  return attributes.map((attr, index) => {
+    const { versePosition, ...rest } = attr;
+    return {
+      order_in_revelation: index + 1, // Sequential unique number
+      ...rest,
+    };
+  });
 }
 
 function parseOccurrences(
   occurredVerse: string,
-): { chapter_index: number; verse_index: number; word_index: number | null }[] {
+): { chapter_index: number; verse_index: number; word_index: number }[] {
   if (!occurredVerse || occurredVerse.trim() === "") return [];
 
   return occurredVerse
@@ -110,7 +119,7 @@ function parseOccurrences(
       return {
         chapter_index: parseInt(parts[0]) || -1,
         verse_index: parseInt(parts[1]) || -1,
-        word_index: parts[2] ? parseInt(parts[2]) : null,
+        word_index: parts[2] ? parseInt(parts[2]) : -1,
       };
     });
 }
@@ -125,7 +134,7 @@ const quranVerseCounts: number[] = [
   11, 8, 8, 19, 5, 8, 8, 11, 11, 8, 3, 9, 5, 4, 7, 3, 6, 3, 5, 4, 5, 6,
 ];
 
-function calculateOrderFromFirstOccurrence(occurrence: {
+function calculateVersePosition(occurrence: {
   chapter_index: number;
   verse_index: number;
 }): number {
