@@ -17,6 +17,8 @@ const fullMap = {
     russian: "russian",
     en: "english",
     english: "english",
+    bn: "bengali",
+    bengali: "bengali"
 };
 
 export function resolveLanguage(codeOrName: string): string {

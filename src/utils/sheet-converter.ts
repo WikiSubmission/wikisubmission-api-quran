@@ -93,26 +93,24 @@ export function convertSheetDataToGodAttributes(
 
 function parseOccurrences(
   occurredVerse: string,
-): { chapter_index: number; verse_index: number; word_index: number }[] {
+): { chapter_index: number; verse_index: number; word_index: number | null }[] {
   if (!occurredVerse || occurredVerse.trim() === "") return [];
 
   return occurredVerse
     .split(",")
     .map((verse) => verse.trim())
+    .filter((verse) => {
+      if (!verse) return false;
+      const parts = verse.split(":");
+      return parts.length >= 2;
+    })
     .filter((verse) => verse !== "")
     .map((verse) => {
       const parts = verse.split(":");
-      if (parts.length >= 2) {
-        return {
-          chapter_index: parseInt(parts[0]) || 1,
-          verse_index: parseInt(parts[1]) || 1,
-          word_index: parts[2] ? parseInt(parts[2]) : 1,
-        };
-      }
       return {
-        chapter_index: 1,
-        verse_index: 1,
-        word_index: 1,
+        chapter_index: parseInt(parts[0]) || -1,
+        verse_index: parseInt(parts[1]) || -1,
+        word_index: parts[2] ? parseInt(parts[2]) : null,
       };
     });
 }
